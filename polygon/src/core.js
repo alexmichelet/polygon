@@ -9,13 +9,6 @@ var PolygonCore = function(physicsKey, points) {
 };
 
 /**
- * @param {PolygonPoint} point
- */
-PolygonCore.prototype.addPoint = function(point) {
-  this.points.push(point);
-};
-
-/**
  * @returns {string}
  */
 PolygonCore.prototype.getJSON = function() {

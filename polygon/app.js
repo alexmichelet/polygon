@@ -1,13 +1,9 @@
-var core = new PolygonCore("test", []);
-core.addPoint(new PolygonPoint(-2, -2));
-core.addPoint(new PolygonPoint(-2, 2));
-core.addPoint(new PolygonPoint(2, 2));
-core.addPoint(new PolygonPoint(2, -2));
-core.addPoint(new PolygonPoint(1, 0));
-core.addPoint(new PolygonPoint(0, 1));
-core.addPoint(new PolygonPoint(-1, 0));
-core.addPoint(new PolygonPoint(0, -1));
+var maxWidth = window.innerWidth
+    || document.documentElement.clientWidth
+    || document.body.clientWidth;
 
-console.log(core.getJSON());
+var maxHeight = (window.innerHeight
+    || document.documentElement.clientHeight
+    || document.body.clientHeight) - 50;
 
-// new PolygonUI(640, 640, 'phaser-renderer');
+var ui = new PolygonUI(maxWidth, maxHeight, 'phaser-renderer');
