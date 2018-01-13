@@ -63,7 +63,7 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
             var loader = new Phaser.Loader(ui.game);
             loader.image('loadedSprite', e.target.result);
             loader.onLoadComplete.addOnce(function() {
-              console.log(">> new sprite has been loaded");
+              console.log('>> new sprite has been loaded');
               ui.initParams('loadedSprite', spriteWidth, spriteHeight);
             });
             loader.start();
@@ -78,6 +78,7 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
  */
 PolygonUI.prototype.preload = function() {
   this.game.load.image('phaser-logo', 'assets/img/phaser-logo.png');
+  this.game.load.image('point', 'assets/img/point.png');
 };
 
 /**
@@ -87,20 +88,37 @@ PolygonUI.prototype.create = function() {
   this.initParams('phaser-logo', 635, 545);
 
   this.game.input.onDown.add(function() {
-    this.points.push(
-        new PolygonPoint(this.game.input.x / this.zoom, this.game.input.y /
-            this.zoom));
+    if (this.isAValidClick(this.game.input.x, this.game.input.y)) {
+      this.points.push(
+          new PolygonPoint(this.game.input.x, this.game.input.y, this.game));
+    }
   }, this);
+};
+
+/**
+ * Determines if a click is valid to add a new point, or if it is a click to
+ * start a dragging
+ *
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
+PolygonUI.prototype.isAValidClick = function(x, y) {
+  var clickedPoints = this.points.filter(function(point) {
+    return point.getBounds().contains(x, y);
+  });
+
+  return clickedPoints.length === 0;
 };
 
 /**
  * Update the Graphics object displaying the polygon
  */
 PolygonUI.prototype.update = function() {
-  var pointsWithZoom = [];
+  var simplePoints = [];
   for (var i = 0; i < this.points.length; i++) {
-    pointsWithZoom[i * 2] = this.points[i].x * this.zoom;
-    pointsWithZoom[(i * 2) + 1] = this.points[i].y * this.zoom;
+    simplePoints[i * 2] = this.points[i].x;
+    simplePoints[(i * 2) + 1] = this.points[i].y;
   }
 
   if (this.polygonGraphics != null) {
@@ -110,7 +128,7 @@ PolygonUI.prototype.update = function() {
   this.polygonGraphics = this.game.add.graphics(0, 0);
 
   this.polygonGraphics.beginFill(0x00ff00, 0.4);
-  this.polygonGraphics.drawPolygon(pointsWithZoom);
+  this.polygonGraphics.drawPolygon(simplePoints);
   this.polygonGraphics.endFill();
 };
 
@@ -162,6 +180,6 @@ PolygonUI.prototype.resetPoints = function() {
  * @returns {string}
  */
 PolygonUI.prototype.export = function() {
-  var core = new PolygonCore('key', this.points);
+  var core = new PolygonCore('key', this.points, this.zoom);
   return core.getJSON();
 };

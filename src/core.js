@@ -1,11 +1,13 @@
 /**
  * @param {string} physicsKey
  * @param {PolygonPoint[]} points
+ * @param {number} zoom
  * @constructor
  */
-var PolygonCore = function(physicsKey, points) {
+var PolygonCore = function(physicsKey, points, zoom) {
   this.physicsKey = physicsKey;
   this.points = points;
+  this.zoom = zoom;
 };
 
 /**
@@ -15,7 +17,7 @@ PolygonCore.prototype.getJSON = function() {
   var pointsCdt2d = [];
 
   for (var i = 0; i < this.points.length; i++) {
-    pointsCdt2d[i] = this.points[i].toArray();
+    pointsCdt2d[i] = this.points[i].toZoomedOutArray(this.zoom);
   }
 
   var cdt2dTriangles = cdt2d(pointsCdt2d);
@@ -23,14 +25,17 @@ PolygonCore.prototype.getJSON = function() {
   var triangles = [];
 
   for (var j = 0; j < cdt2dTriangles.length; j++) {
+    var point1 = this.points[cdt2dTriangles[j][0]].toZoomedOutArray(this.zoom);
+    var point2 = this.points[cdt2dTriangles[j][1]].toZoomedOutArray(this.zoom);
+    var point3 = this.points[cdt2dTriangles[j][2]].toZoomedOutArray(this.zoom);
     triangles[j] = {
       'shape': [
-        this.points[cdt2dTriangles[j][0]].x,
-        this.points[cdt2dTriangles[j][0]].y,
-        this.points[cdt2dTriangles[j][1]].x,
-        this.points[cdt2dTriangles[j][1]].y,
-        this.points[cdt2dTriangles[j][2]].x,
-        this.points[cdt2dTriangles[j][2]].y,
+        point1[0],
+        point1[1],
+        point2[0],
+        point2[1],
+        point3[0],
+        point3[1],
       ],
     };
   }
