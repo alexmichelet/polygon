@@ -78,7 +78,7 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
               loader.image('loadedSprite', e.target.result);
               loader.onLoadComplete.addOnce(function() {
                 console.log('>> new sprite has been loaded');
-                ui.initParams('loadedSprite', spriteWidth, spriteHeight);
+                ui.initParams(spriteWidth, spriteHeight);
               });
               loader.start();
             };
@@ -98,12 +98,12 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
       }
       if (btn.getAttribute('data-action') === 'showTest') {
         ui.test();
-        btn.outerHTML = '<button id="button-test" data-action="hideTest">' +
+        btn.outerHTML = '<button id="button-test" data-action="hideTest" title="Editor mode">' +
             '       <i class="fa fa-pencil" aria-hidden="true"></i>' +
             '    </button>';
       } else {
         ui.stopTest();
-        btn.outerHTML = '<button id="button-test" data-action="showTest">' +
+        btn.outerHTML = '<button id="button-test" data-action="showTest" title="Test mode">' +
             '      <i class="fa fa-eye" aria-hidden="true"></i>' +
             '    </button>';
       }
@@ -120,7 +120,7 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
  * Loads the default sprite
  */
 PolygonUI.prototype.preload = function() {
-  this.game.load.image('phaser-logo', 'assets/img/phaser-logo.png');
+  this.game.load.image('loadedSprite', 'assets/img/phaser-logo.png');
   this.game.load.image('point', 'assets/img/point.png');
 };
 
@@ -128,7 +128,7 @@ PolygonUI.prototype.preload = function() {
  * Initialize the params and add the click listener to add points
  */
 PolygonUI.prototype.create = function() {
-  this.initParams('phaser-logo', 635, 545);
+  this.initParams(635, 545);
 
   this.game.input.onDown.add(function() {
     if (!this.isTesting) {
@@ -184,12 +184,12 @@ PolygonUI.prototype.update = function() {
 /**
  * Initialize the params for a newly selected sprite
  *
- * @param {string} spriteKey
  * @param {number} spriteWidth
  * @param {number} spriteHeight
  */
-PolygonUI.prototype.initParams = function(
-    spriteKey, spriteWidth, spriteHeight) {
+PolygonUI.prototype.initParams = function(spriteWidth, spriteHeight) {
+  var spriteKey = 'loadedSprite';
+
   if (this.sprite === null) {
     this.sprite = this.game.add.sprite(this.game.world.centerX,
         this.game.world.centerY, spriteKey);
@@ -242,6 +242,8 @@ PolygonUI.prototype.export = function() {
 PolygonUI.prototype.test = function() {
   this.isTesting = true;
 
+  document.getElementById('sprite-upload').disabled = true;
+
   this.sprite.visible = false;
   this.polygonGraphics.visible = false;
   for (var i = 0; i < this.points.length; i++) {
@@ -253,11 +255,11 @@ PolygonUI.prototype.test = function() {
 
   this.game.physics.startSystem(Phaser.Physics.P2JS);
   this.spriteTest = this.game.add.sprite(this.game.world.centerX,
-      this.game.world.centerY, 'phaser-logo');
+      this.game.world.centerY, 'loadedSprite');
   this.spriteTest.width = this.sprite.width / this.zoom;
   this.spriteTest.height = this.sprite.height / this.zoom;
   this.game.physics.p2.enable(this.spriteTest, true);
-  this.spriteTest.visible = false;
+  // this.spriteTest.visible = false;
   this.spriteTest.body.clearShapes();
   this.spriteTest.body.loadPolygon(null, data.key);
 };
@@ -273,6 +275,8 @@ PolygonUI.prototype.stopTest = function () {
   for (var i = 0; i < this.points.length; i++) {
     this.points[i].visible = true;
   }
+
+  document.getElementById('sprite-upload').disabled = false;
 
   this.isTesting = false;
 };

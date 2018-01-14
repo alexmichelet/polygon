@@ -37,13 +37,15 @@ canvas {
     cursor: pointer;
     color: #F4FDFF;
     background: #503C36;
+
+    transition: color 0.3s, background 0.3s;
 }
 
 #menu button:hover {
-    opacity: 0.85;
+    background: #F4FDFF;
+    color: #503C36;
 }
 
 #menu button:focus {
     outline: 0;
 }
-
