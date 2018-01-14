@@ -1,15 +1,21 @@
 /**
  * @param {number} x
  * @param {number} y
- * @param {Phaser.Game}game
+ * @param {PolygonUI} ui
  * @constructor
  * @extends {Phaser.Sprite}
  */
-var PolygonPoint = function(x, y, game) {
-  Phaser.Sprite.call(this, game, x, y, 'point');
-  game.add.existing(this);
+var PolygonPoint = function(x, y, ui) {
+  Phaser.Sprite.call(this, ui.game, x, y, 'point');
+  ui.game.add.existing(this);
   this.inputEnabled = true;
   this.input.enableDrag(true);
+
+  var point = this;
+
+  this.events.onInputDown.add(function () {
+    ui.setCurrentPoint(point);
+  });
 };
 
 PolygonPoint.prototype = Object.create(Phaser.Sprite.prototype);

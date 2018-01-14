@@ -60,6 +60,12 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
    */
   this.polygonGraphics = null;
 
+  /**
+   * Point currently selected
+   * @type {PolygonPoint}
+   */
+  this.currentPoint = null;
+
   var ui = this;
 
   // Change the sprite when an image is selected by the image selector
@@ -122,6 +128,7 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
 PolygonUI.prototype.preload = function() {
   this.game.load.image('loadedSprite', 'assets/img/phaser-logo.png');
   this.game.load.image('point', 'assets/img/point.png');
+  this.game.load.image('currentPoint', 'assets/img/current-point.png');
 };
 
 /**
@@ -133,9 +140,22 @@ PolygonUI.prototype.create = function() {
   this.game.input.onDown.add(function() {
     if (!this.isTesting) {
       if (this.isAValidClick(this.game.input.x, this.game.input.y)) {
-        this.points.push(
-            new PolygonPoint(this.game.input.x, this.game.input.y, this.game));
+        var currentIndex = this.points.indexOf(this.currentPoint);
+        currentIndex = currentIndex === -1 ? this.points.length + 1 : currentIndex;
+        var newPoint = new PolygonPoint(this.game.input.x, this.game.input.y, this);
+        this.points.splice(currentIndex + 1, 0, newPoint);
+        this.setCurrentPoint(newPoint);
       }
+    }
+  }, this);
+
+  var deleteKey = this.game.input.keyboard.addKey(Phaser.Keyboard.DELETE);
+  deleteKey.onDown.add(function () {
+    if (this.currentPoint != null) {
+      var currentIndex = this.points.indexOf(this.currentPoint);
+      this.points.splice(currentIndex, 1);
+      this.currentPoint.destroy();
+      this.currentPoint = null;
     }
   }, this);
 };
@@ -280,4 +300,16 @@ PolygonUI.prototype.stopTest = function () {
   document.getElementById('sprite-upload').disabled = false;
 
   this.isTesting = false;
+};
+
+/**
+ * @param {PolygonPoint} point
+ */
+PolygonUI.prototype.setCurrentPoint = function (point) {
+  if (this.currentPoint != null) {
+    this.currentPoint.loadTexture('point');
+  }
+
+  point.loadTexture('currentPoint');
+  this.currentPoint = point;
 };
