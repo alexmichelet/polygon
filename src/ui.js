@@ -94,12 +94,15 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
       }, false);
 
   // Change the mode (editor/test)
-  document.addEventListener('click', function (e) {
-    if(e.target && (e.target.id === 'button-test' || e.target.parentElement.id === 'button-test')) {
+  document.addEventListener('click', function(e) {
+    if (e.target &&
+        (e.target.id === 'button-test' || e.target.parentElement.id ===
+            'button-test')) {
       var btn;
-      if (e.target.tagName === "I" || e.target.tagName === "i") {
+      if (e.target.tagName === 'I' || e.target.tagName === 'i') {
         btn = e.target.parentElement;
-      } else {
+      }
+      else {
         btn = e.target;
       }
       if (btn.getAttribute('data-action') === 'showTest') {
@@ -107,7 +110,8 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
         btn.outerHTML = '<button id="button-test" data-action="hideTest" title="Editor mode">' +
             '       <i class="fa fa-pencil" aria-hidden="true"></i>' +
             '    </button>';
-      } else {
+      }
+      else {
         ui.stopTest();
         btn.outerHTML = '<button id="button-test" data-action="showTest" title="Test mode">' +
             '      <i class="fa fa-eye" aria-hidden="true"></i>' +
@@ -117,7 +121,7 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
   });
 
   // Export the JSON file
-  document.getElementById('button-save').addEventListener('click', function () {
+  document.getElementById('button-save').addEventListener('click', function() {
     ui.export();
   });
 };
@@ -141,8 +145,11 @@ PolygonUI.prototype.create = function() {
     if (!this.isTesting) {
       if (this.isAValidClick(this.game.input.x, this.game.input.y)) {
         var currentIndex = this.points.indexOf(this.currentPoint);
-        currentIndex = currentIndex === -1 ? this.points.length + 1 : currentIndex;
-        var newPoint = new PolygonPoint(this.game.input.x, this.game.input.y, this);
+        currentIndex = currentIndex === -1
+            ? this.points.length + 1
+            : currentIndex;
+        var newPoint = new PolygonPoint(this.game.input.x, this.game.input.y,
+            this);
         this.points.splice(currentIndex + 1, 0, newPoint);
         this.setCurrentPoint(newPoint);
       }
@@ -150,7 +157,7 @@ PolygonUI.prototype.create = function() {
   }, this);
 
   var deleteKey = this.game.input.keyboard.addKey(Phaser.Keyboard.DELETE);
-  deleteKey.onDown.add(function () {
+  deleteKey.onDown.add(function() {
     if (this.currentPoint != null) {
       var currentIndex = this.points.indexOf(this.currentPoint);
       this.points.splice(currentIndex, 1);
@@ -249,11 +256,25 @@ PolygonUI.prototype.resetPoints = function() {
 /**
  * Exports the polygon in JSON format
  *
+ * @author
  * @returns {string}
  */
 PolygonUI.prototype.export = function() {
   var core = new PolygonCore('key', this.points, this.zoom);
-  console.log(core.getJSON());
+  var data = core.getJSON();
+
+  var blob = new Blob([data], {type: 'text/csv'});
+  if (window.navigator.msSaveOrOpenBlob) {
+    window.navigator.msSaveBlob(blob, 'physics.json');
+  }
+  else {
+    var elem = window.document.createElement('a');
+    elem.href = window.URL.createObjectURL(blob);
+    elem.download = 'physics.json';
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  }
 };
 
 /**
@@ -288,7 +309,7 @@ PolygonUI.prototype.test = function() {
 /**
  * Gets back to the normal view
  */
-PolygonUI.prototype.stopTest = function () {
+PolygonUI.prototype.stopTest = function() {
   this.spriteTest.destroy();
 
   this.sprite.visible = true;
@@ -305,7 +326,7 @@ PolygonUI.prototype.stopTest = function () {
 /**
  * @param {PolygonPoint} point
  */
-PolygonUI.prototype.setCurrentPoint = function (point) {
+PolygonUI.prototype.setCurrentPoint = function(point) {
   if (this.currentPoint != null) {
     this.currentPoint.loadTexture('point');
   }
