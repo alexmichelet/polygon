@@ -262,6 +262,7 @@ PolygonUI.prototype.test = function() {
   // this.spriteTest.visible = false;
   this.spriteTest.body.clearShapes();
   this.spriteTest.body.loadPolygon(null, data.key);
+  this.spriteTest.body.kinematic = true;
 };
 
 /**
