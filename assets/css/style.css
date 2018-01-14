@@ -17,8 +17,8 @@ canvas {
     line-height: 50px;
     border-bottom: 1px solid #f0f0f0;
     text-align: center;
-    background: #0f0f0f;
-    color: #fff;
+    background: #A0D6E7;
+    color: #503C36;
 }
 
 #menu p {
@@ -27,6 +27,7 @@ canvas {
     top: 5px;
     line-height: 40px;
 }
+
 #menu button {
     height: 40px;
     width: 40px;
@@ -34,10 +35,15 @@ canvas {
     border-radius: 50%;
     border: 0;
     cursor: pointer;
-    background: #f0f0f0;
-    color: #0f0f0f;
+    color: #F4FDFF;
+    background: #503C36;
 }
 
 #menu button:hover {
-    opacity: 0.95;
+    opacity: 0.85;
 }
+
+#menu button:focus {
+    outline: 0;
+}
+
