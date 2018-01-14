@@ -20,7 +20,14 @@ PolygonCore.prototype.getJSON = function() {
     pointsCdt2d[i] = this.points[i].toZoomedOutArray(this.zoom);
   }
 
-  var cdt2dTriangles = cdt2d(pointsCdt2d);
+  var edges = [];
+  for (var k = 0; k < pointsCdt2d.length - 1; k++) {
+    edges.push([k, k+1]);
+  }
+
+  edges.push([k, 0]);
+
+  var cdt2dTriangles = cdt2d(pointsCdt2d, edges, {exterior: false});
 
   var triangles = [];
 

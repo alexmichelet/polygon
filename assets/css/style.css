@@ -20,3 +20,24 @@ canvas {
     background: #0f0f0f;
     color: #fff;
 }
+
+#menu p {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    line-height: 40px;
+}
+#menu button {
+    height: 40px;
+    width: 40px;
+    font-size: 18px;
+    border-radius: 50%;
+    border: 0;
+    cursor: pointer;
+    background: #f0f0f0;
+    color: #0f0f0f;
+}
+
+#menu button:hover {
+    opacity: 0.95;
+}

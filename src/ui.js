@@ -42,6 +42,19 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
   this.zoom = null;
 
   /**
+   * Is the editor currently showing the triangles (if so, prevents from doing
+   * anything else)
+   * @type {boolean}
+   */
+  this.isTesting = false;
+
+  /**
+   * Sprite displaying the generated triangles in the P2 Physics System
+   * @type {Phaser.Sprite}
+   */
+  this.spriteTest = null;
+
+  /**
    * Graphics object displaying the polygon defined by the points
    * @type {Phaser.Graphics}
    */
@@ -52,25 +65,55 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
   // Change the sprite when an image is selected by the image selector
   document.getElementById('sprite-upload').
       addEventListener('change', function(e) {
-        var file = e.target.files[0];
-        var fr = new FileReader();
-        fr.onload = function(e) {
-          var image = new Image();
-          image.src = e.target.result;
-          image.onload = function() {
-            var spriteWidth = this.width;
-            var spriteHeight = this.height;
-            var loader = new Phaser.Loader(ui.game);
-            loader.image('loadedSprite', e.target.result);
-            loader.onLoadComplete.addOnce(function() {
-              console.log('>> new sprite has been loaded');
-              ui.initParams('loadedSprite', spriteWidth, spriteHeight);
-            });
-            loader.start();
+        if (!ui.isTesting) {
+          var file = e.target.files[0];
+          var fr = new FileReader();
+          fr.onload = function(e) {
+            var image = new Image();
+            image.src = e.target.result;
+            image.onload = function() {
+              var spriteWidth = this.width;
+              var spriteHeight = this.height;
+              var loader = new Phaser.Loader(ui.game);
+              loader.image('loadedSprite', e.target.result);
+              loader.onLoadComplete.addOnce(function() {
+                console.log('>> new sprite has been loaded');
+                ui.initParams('loadedSprite', spriteWidth, spriteHeight);
+              });
+              loader.start();
+            };
           };
-        };
-        fr.readAsDataURL(file);
+          fr.readAsDataURL(file);
+        }
       }, false);
+
+  // Change the mode (editor/test)
+  document.addEventListener('click', function (e) {
+    if(e.target && (e.target.id === 'button-test' || e.target.parentElement.id === 'button-test')) {
+      var btn;
+      if (e.target.tagName === "I" || e.target.tagName === "i") {
+        btn = e.target.parentElement;
+      } else {
+        btn = e.target;
+      }
+      if (btn.getAttribute('data-action') === 'showTest') {
+        ui.test();
+        btn.outerHTML = '<button id="button-test" data-action="hideTest">' +
+            '       <i class="fa fa-pencil" aria-hidden="true"></i>' +
+            '    </button>';
+      } else {
+        ui.stopTest();
+        btn.outerHTML = '<button id="button-test" data-action="showTest">' +
+            '      <i class="fa fa-eye" aria-hidden="true"></i>' +
+            '    </button>';
+      }
+    }
+  });
+
+  // Export the JSON file
+  document.getElementById('button-save').addEventListener('click', function () {
+    ui.export();
+  });
 };
 
 /**
@@ -88,9 +131,11 @@ PolygonUI.prototype.create = function() {
   this.initParams('phaser-logo', 635, 545);
 
   this.game.input.onDown.add(function() {
-    if (this.isAValidClick(this.game.input.x, this.game.input.y)) {
-      this.points.push(
-          new PolygonPoint(this.game.input.x, this.game.input.y, this.game));
+    if (!this.isTesting) {
+      if (this.isAValidClick(this.game.input.x, this.game.input.y)) {
+        this.points.push(
+            new PolygonPoint(this.game.input.x, this.game.input.y, this.game));
+      }
     }
   }, this);
 };
@@ -119,6 +164,10 @@ PolygonUI.prototype.update = function() {
   for (var i = 0; i < this.points.length; i++) {
     simplePoints[i * 2] = this.points[i].x;
     simplePoints[(i * 2) + 1] = this.points[i].y;
+  }
+
+  if (this.polygonGraphics != null && this.polygonGraphics.visible === false) {
+    return;
   }
 
   if (this.polygonGraphics != null) {
@@ -170,6 +219,9 @@ PolygonUI.prototype.initParams = function(
 PolygonUI.prototype.resetPoints = function() {
   if (this.points.length > 0) {
     console.log('>> reset list of points');
+    for (var i = 0; i < this.points.length; i++) {
+      this.points[i].destroy();
+    }
     this.points = [];
   }
 };
@@ -181,5 +233,46 @@ PolygonUI.prototype.resetPoints = function() {
  */
 PolygonUI.prototype.export = function() {
   var core = new PolygonCore('key', this.points, this.zoom);
-  return core.getJSON();
+  console.log(core.getJSON());
+};
+
+/**
+ * Show the generated triangles
+ */
+PolygonUI.prototype.test = function() {
+  this.isTesting = true;
+
+  this.sprite.visible = false;
+  this.polygonGraphics.visible = false;
+  for (var i = 0; i < this.points.length; i++) {
+    this.points[i].visible = false;
+  }
+
+  var core = new PolygonCore('key', this.points, this.zoom);
+  var data = JSON.parse(core.getJSON());
+
+  this.game.physics.startSystem(Phaser.Physics.P2JS);
+  this.spriteTest = this.game.add.sprite(this.game.world.centerX,
+      this.game.world.centerY, 'phaser-logo');
+  this.spriteTest.width = this.sprite.width / this.zoom;
+  this.spriteTest.height = this.sprite.height / this.zoom;
+  this.game.physics.p2.enable(this.spriteTest, true);
+  this.spriteTest.visible = false;
+  this.spriteTest.body.clearShapes();
+  this.spriteTest.body.loadPolygon(null, data.key);
+};
+
+/**
+ * Gets back to the normal view
+ */
+PolygonUI.prototype.stopTest = function () {
+  this.spriteTest.destroy();
+
+  this.sprite.visible = true;
+  this.polygonGraphics.visible = true;
+  for (var i = 0; i < this.points.length; i++) {
+    this.points[i].visible = true;
+  }
+
+  this.isTesting = false;
 };

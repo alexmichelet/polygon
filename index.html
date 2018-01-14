@@ -4,13 +4,24 @@
     <meta charset="utf-8">
     <title>Polygon Editor</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://use.fontawesome.com/89a7f03a9d.js"></script>
 </head>
 <body>
 <div id="menu">
-    <input type="file" id="sprite-upload"/>
+    <input type="file" id="sprite-upload">
+
+    <p>
+        <button id="button-test" data-action="showTest">
+            <i class="fa fa-eye" aria-hidden="true"></i>
+        </button>
+
+        <button id="button-save">
+            <i class="fa fa-floppy-o" aria-hidden="true"></i>
+        </button>
+    </p>
 </div>
 
- <div id="phaser-renderer"></div>
+<div id="phaser-renderer"></div>
 
 <script src="vendor/two-sum.js"></script>
 <script src="vendor/robust-scale.js"></script>
