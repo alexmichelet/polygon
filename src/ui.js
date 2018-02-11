@@ -106,10 +106,12 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
         btn = e.target;
       }
       if (btn.getAttribute('data-action') === 'showTest') {
-        ui.test();
-        btn.outerHTML = '<button id="button-test" data-action="hideTest" title="Editor mode">' +
-            '       <i class="fa fa-pencil" aria-hidden="true"></i>' +
-            '    </button>';
+        if (ui.points.length !== 0) {
+          ui.test();
+          btn.outerHTML = '<button id="button-test" data-action="hideTest" title="Editor mode">' +
+              '       <i class="fa fa-pencil" aria-hidden="true"></i>' +
+              '    </button>';
+        }
       }
       else {
         ui.stopTest();
@@ -122,7 +124,9 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
 
   // Export the JSON file
   document.getElementById('button-save').addEventListener('click', function() {
-    ui.export();
+    if (ui.points.length !== 0) {
+      ui.export();
+    }
   });
 };
 
