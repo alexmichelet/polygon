@@ -42,14 +42,14 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
   this.zoom = null;
 
   /**
-   * Is the editor currently showing the triangles (if so, prevents from doing
-   * anything else)
+   * Is the editor currently showing the generated polygons (if so, prevents
+   * from doing anything else)
    * @type {boolean}
    */
   this.isTesting = false;
 
   /**
-   * Sprite displaying the generated triangles in the P2 Physics System
+   * Sprite displaying the generated polygons in the P2 Physics System
    * @type {Phaser.Sprite}
    */
   this.spriteTest = null;
