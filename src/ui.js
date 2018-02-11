@@ -237,6 +237,8 @@ PolygonUI.prototype.initParams = function(spriteWidth, spriteHeight) {
   this.sprite.width = spriteWidth * this.zoom;
   this.sprite.anchor.setTo(0.5, 0.5);
 
+  this.currentPoint = null;
+
   this.resetPoints();
 };
 
