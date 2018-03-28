@@ -128,6 +128,13 @@ var PolygonUI = function(maxWidth, maxHeight, domElement) {
       ui.export();
     }
   });
+
+  // Erase all points
+  document.getElementById('button-erase').addEventListener('click', function() {
+    if (ui.points.length !== 0) {
+      ui.eraseAll();
+    }
+  });
 };
 
 /**
@@ -339,4 +346,11 @@ PolygonUI.prototype.setCurrentPoint = function(point) {
 
   point.loadTexture('currentPoint');
   this.currentPoint = point;
+};
+
+/**
+ * Resets the screen but keeps the current sprite
+ */
+PolygonUI.prototype.eraseAll = function() {
+  this.initParams(this.sprite.width, this.sprite.height);
 };
