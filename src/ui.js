@@ -352,5 +352,5 @@ PolygonUI.prototype.setCurrentPoint = function(point) {
  * Resets the screen but keeps the current sprite
  */
 PolygonUI.prototype.eraseAll = function() {
-  this.initParams(this.sprite.width, this.sprite.height);
+  this.initParams(this.sprite.width / this.zoom, this.sprite.height / this.zoom);
 };
